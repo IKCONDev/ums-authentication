@@ -18,5 +18,9 @@ public interface UserRepository extends JpaRepository<UserDetailsEntity, Integer
     
     @Query("SELECT COUNT(*) FROM UserDetailsEntity WHERE user_email_col=:email and user_otp_code=:otp")
     Integer validateUserOtp(String email, int otp);
+    
+    @Query("UPDATE UserDetailsEntity SET user_encypwd_col=:encodedPassword WHERE user_email_col=:email")
+    @Modifying
+    Integer updatePassword(String email, String encodedPassword);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ikn.ums.dto.UserDetailsDto;
@@ -23,6 +24,9 @@ public class UsersServiceImpl implements IUsersService {
 	@Autowired
 	private UserRepository userRepo;
 
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	@Override
 	public UserDetailsDto getUserDetailsByUsername(String email) {
 		UserDetailsEntity loadedUser = userRepo.findByEmail(email);
@@ -73,6 +77,14 @@ public class UsersServiceImpl implements IUsersService {
 		int otpCode = Integer.parseInt(otp);
 		int count = userRepo.validateUserOtp(email, otpCode);
 		return count;
+	}
+
+	@Override
+	@Transactional
+	public int updatePasswordforUser(String email, CharSequence newRawPassword) {
+		String encodedPassword =  passwordEncoder.encode(newRawPassword);
+		int updateStatus = userRepo.updatePassword(email, encodedPassword);
+		return updateStatus;
 	}
 
 }

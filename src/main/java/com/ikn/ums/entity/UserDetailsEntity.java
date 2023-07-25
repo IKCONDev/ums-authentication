@@ -14,19 +14,19 @@ public class UserDetailsEntity{
 	//user login properties
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "user_pk_id_col")
+	@Column(name = "user_id_col")
 	public Integer id;
 	
-	@Column(name = "user_fn_col")
+	@Column(name = "user_fstn_col")
 	public String firstName;
 	
-	@Column(name = "user_ln_col")
+	@Column(name = "user_lstn_col")
 	public String lastName;
 	
 	@Column(name = "user_email_col")
 	public String email;
 	
-	@Column(name = "user_encpwd_col")
+	@Column(name = "user_encypwd_col")
 	public String encryptedPassword;
 	
 	@Column(name = "user_role_col")

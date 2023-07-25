@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ikn.ums.model.UpdatePasswordRequestModel;
 import com.ikn.ums.model.ValidateOtpRequestModel;
 import com.ikn.ums.service.IUsersService;
 
@@ -52,6 +53,18 @@ public class LoginController {
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequestModel updatePasswordModel){
+		try {
+			int updateStatus = userService.updatePasswordforUser(updatePasswordModel.getEmail(), 
+					                                             updatePasswordModel.getConfirmPassword());
+			return new ResponseEntity<>(updateStatus, HttpStatus.OK);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
