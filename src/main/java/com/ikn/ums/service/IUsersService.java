@@ -10,5 +10,6 @@ public interface IUsersService extends UserDetailsService {
 	int generateOtpForUser(String userName);
 	int validateUserOtp(String email, String otp);
 	int updatePasswordforUser(String email, CharSequence newRawPassword);
+	int validateEmailAddress(String email);
 
 }

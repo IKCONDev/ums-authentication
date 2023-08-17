@@ -67,5 +67,11 @@ public class LoginController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	@GetMapping("/validate-email/{email}")
+	public ResponseEntity<?> verifyEmailAddress_ForOtp(@PathVariable String email){
+		Integer value = userService.validateEmailAddress(email);
+		return new ResponseEntity<Integer>(value,HttpStatus.OK);
+		
+	}
 
 }
