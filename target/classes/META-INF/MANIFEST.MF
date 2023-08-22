@@ -1,10 +1,6 @@
 Manifest-Version: 1.0
 Build-Jdk-Spec: 17
-<<<<<<< HEAD
-Implementation-Title: ums
-=======
 Implementation-Title: ums-authentication
->>>>>>> authentication
 Implementation-Version: 0.0.1
 Created-By: Maven Integration for Eclipse
 
