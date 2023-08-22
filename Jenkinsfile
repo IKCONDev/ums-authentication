@@ -32,6 +32,7 @@ pipeline {
         stage('Moving the WAR File to Tomcat Server') {
             steps {
                 bat '''
+				
 		     echo War file moved and deployed sucessfully!
                      sc stop tomcat9
                      echo tomcat stopped successfully!
