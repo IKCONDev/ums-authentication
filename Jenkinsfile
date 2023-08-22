@@ -20,8 +20,8 @@ pipeline {
                                  //Set JAVA_HOME
                                  bat '''
                                   set JAVA_HOME=C:/Program Files/Java/jdk-11
-                                 ./mvnw clean package
-                                 ./mvnw test
+                                  /mvnw clean package
+                                  /mvnw test
                                  '''
                              }
 			}
