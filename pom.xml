@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ikn.ums</groupId>
-	<artifactId>ums</artifactId>
+	<artifactId>ums-authentication</artifactId>
 	<version>0.0.1</version>
-	<name>ums</name>
-	<description>ums</description>
+	<name>ums-authentication</name>
+	<description>ums-authentication</description>
 	<properties>
 		<java.version>11</java.version>
 		<spring-cloud.version>2021.0.8</spring-cloud.version>
@@ -91,6 +91,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 

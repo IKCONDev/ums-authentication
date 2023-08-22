@@ -4,17 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ikn.ums.entity.UserDetailsEntity;
 import com.ikn.ums.model.UpdatePasswordRequestModel;
 import com.ikn.ums.model.ValidateOtpRequestModel;
+import com.ikn.ums.repository.UserRepository;
 import com.ikn.ums.service.IUsersService;
 
 @RestController
@@ -27,11 +27,22 @@ public class LoginController {
 	@Autowired
 	private IUsersService userService;
 	
+//	@Autowired
+//	private UserRepository userRepository;
+	
 	@GetMapping // later we will change it to post
 	public ResponseEntity<String> authenticate(){
 		String encodedPWD = encoder.encode("test");
 		return new ResponseEntity<String>(encodedPWD,HttpStatus.OK);
 	}
+	
+	/*
+	@PostMapping
+	public ResponseEntity<?> saveUser(@RequestBody UserDetailsEntity user){
+		UserDetailsEntity savedUser = userRepository.save(user);	
+		return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+	}
+	*/
 	
 	@PostMapping("/generate-otp/{email}")
 	public ResponseEntity<?> generateAndSendOtpToUser(@PathVariable String email){
@@ -69,9 +80,18 @@ public class LoginController {
 	}
 	@GetMapping("/validate-email/{email}")
 	public ResponseEntity<?> verifyEmailAddress_ForOtp(@PathVariable String email){
-		Integer value = userService.validateEmailAddress(email);
-		return new ResponseEntity<Integer>(value,HttpStatus.OK);
+		try {
+			Integer value = userService.validateEmailAddress(email);
+			return new ResponseEntity<Integer>(value,HttpStatus.OK);
+		}catch (Exception e) {
+			return new ResponseEntity<>("Error while validating email, please try again", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		
+	}
+	
+	@GetMapping("/demo")
+	public ResponseEntity<String> demo(){
+		return new ResponseEntity<>("OK", HttpStatus.OK);
 	}
 
 }
