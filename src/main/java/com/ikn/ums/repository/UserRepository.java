@@ -13,17 +13,20 @@ public interface UserRepository extends JpaRepository<UserDetailsEntity, Integer
 	UserDetailsEntity findByEmail(String email);
 	
 	@Modifying
-    @Query("Update UserDetailsEntity SET user_otp_code=:otp WHERE user_email_col=:username")
+    @Query("Update UserDetailsEntity SET otpCode=:otp WHERE email=:username")
 	void saveOtp(String username, int otp);
     
-    @Query("SELECT COUNT(*) FROM UserDetailsEntity WHERE user_email_col=:email and user_otp_code=:otp")
+    @Query("SELECT COUNT(*) FROM UserDetailsEntity WHERE email=:email and otpCode=:otp")
     Integer validateUserOtp(String email, int otp);
     
-    @Query("UPDATE UserDetailsEntity SET user_encypwd_col=:encodedPassword WHERE user_email_col=:email")
+    @Query("UPDATE UserDetailsEntity SET encryptedPassword=:encodedPassword WHERE email=:email")
     @Modifying
     Integer updatePassword(String email, String encodedPassword);
     
-    @Query("SELECT COUNT(*) FROM UserDetailsEntity WHERE email=:emailid ")
-    Integer validateEmail(String emailid);
-
+    @Query("SELECT COUNT(*) FROM UserDetailsEntity WHERE email=:email ")
+    Integer validateEmail(String email);
+    
+    @Modifying
+    @Query("UPDATE UserDetailsEntity SET twoFactorAuthentication=:isOn WHERE email=:email")
+    Integer updateTwofactorAuthenticationStatus(String email, boolean isOn);
 }

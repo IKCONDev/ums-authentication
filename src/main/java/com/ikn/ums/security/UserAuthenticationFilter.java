@@ -62,13 +62,13 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 		String userName = ((User) authResult.getPrincipal()).getUsername();
 		UserDetailsDto loadedUser = service.getUserDetailsByUsername(userName);
 
-		String webToken = Jwts.builder().setSubject(loadedUser.getUserId())
+		String webToken = Jwts.builder().setSubject(loadedUser.getId().toString())
 				.setExpiration(new Date(
 						System.currentTimeMillis() + Long.parseLong(environment.getProperty("token.expiration_time"))))
 				.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
 				.setIssuer(request.getRequestURL().toString()).claim("role", loadedUser.getUserRole()).compact();
 
-		String refreshToken = Jwts.builder().setSubject(loadedUser.getUserId())
+		String refreshToken = Jwts.builder().setSubject(loadedUser.getId().toString())
 				.setExpiration(new Date(
 						System.currentTimeMillis() + Long.parseLong(environment.getProperty("token.expiration_time"))))
 				.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
@@ -76,11 +76,12 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 		response.addHeader("token", webToken);
 		response.addHeader("refreshToken", refreshToken);
 		System.out.println(webToken);
-		response.addHeader("userId", loadedUser.getUserId());
+		response.addHeader("userId", loadedUser.getId());
 		response.addHeader("userRole", loadedUser.getUserRole());
 		response.addHeader("firstName", loadedUser.getFirstName());
 		response.addHeader("lastName", loadedUser.getLastName());
 		response.addHeader("email", loadedUser.getEmail());
+		response.addHeader("twoFactorAuth", Boolean.toString(loadedUser.isTwoFactorAuthentication()));
 		//response.addHeader("Access-Control-Allow-Origin", "*");
 		Map<String, String> tokenData = new HashMap<String, String>();
 		tokenData.put("token", webToken);

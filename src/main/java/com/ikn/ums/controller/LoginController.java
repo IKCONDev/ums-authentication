@@ -5,16 +5,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ikn.ums.entity.UserDetailsEntity;
+import com.ikn.ums.dto.UserDetailsDto;
 import com.ikn.ums.model.UpdatePasswordRequestModel;
 import com.ikn.ums.model.ValidateOtpRequestModel;
-import com.ikn.ums.repository.UserRepository;
 import com.ikn.ums.service.IUsersService;
 
 @RestController
@@ -78,6 +78,7 @@ public class LoginController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
 	@GetMapping("/validate-email/{email}")
 	public ResponseEntity<?> verifyEmailAddress_ForOtp(@PathVariable String email){
 		try {
@@ -89,9 +90,33 @@ public class LoginController {
 		
 	}
 	
+	@GetMapping("/user-profile/{username}")
+	public ResponseEntity<?> fetchUserProfile(@PathVariable String username){
+		try {
+			UserDetailsDto userprofileDetails = userService.getUserDetailsByUsername(username);
+			System.out.println(userprofileDetails);
+			return new ResponseEntity<>(userprofileDetails, HttpStatus.OK);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	@GetMapping("/demo")
 	public ResponseEntity<String> demo(){
 		return new ResponseEntity<>("OK", HttpStatus.OK);
+	}
+	
+	@PatchMapping("/update-auth/{username}/{isOn}")
+	public ResponseEntity<?> updateUserTwofactorAuthentication(@PathVariable String username,@PathVariable boolean isOn){
+		System.out.println("executed");
+		try {
+			Integer value = userService.updateUserTwoFactorAuthStatus(username, isOn);
+			return new ResponseEntity<>(value, HttpStatus.OK);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Error while updating two factor authentication status", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

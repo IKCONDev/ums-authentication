@@ -7,9 +7,10 @@ import com.ikn.ums.dto.UserDetailsDto;
 public interface IUsersService extends UserDetailsService {
 	
 	UserDetailsDto getUserDetailsByUsername(String userName);
-	int generateOtpForUser(String userName);
-	int validateUserOtp(String email, String otp);
-	int updatePasswordforUser(String email, CharSequence newRawPassword);
-	int validateEmailAddress(String email);
-
+	Integer generateOtpForUser(String userName);
+	Integer validateUserOtp(String email, String otp);
+	Integer updatePasswordforUser(String email, CharSequence newRawPassword);
+	Integer validateEmailAddress(String email);
+	Integer updateUserTwoFactorAuthStatus(String email, boolean isOn);
+	
 }

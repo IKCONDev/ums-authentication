@@ -8,10 +8,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class DemoApplication {
+public class UmsAuthenticationApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(UmsAuthenticationApplication.class, args);
 		
 	}
 	

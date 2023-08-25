@@ -54,7 +54,7 @@ public class UsersServiceImpl implements IUsersService {
 
 	@Transactional
 	@Override
-	public int generateOtpForUser(String userName) {
+	public Integer generateOtpForUser(String userName) {
 		Random r = new Random();
 		Integer otp = 0;
 		try {
@@ -78,7 +78,7 @@ public class UsersServiceImpl implements IUsersService {
 	}
     
 	@Override
-	public int validateUserOtp(String email, String otp) {
+	public Integer validateUserOtp(String email, String otp) {
 		int otpCode = Integer.parseInt(otp);
 		int count = userRepo.validateUserOtp(email, otpCode);
 		return count;
@@ -86,16 +86,22 @@ public class UsersServiceImpl implements IUsersService {
 
 	@Override
 	@Transactional
-	public int updatePasswordforUser(String email, CharSequence newRawPassword) {
+	public Integer updatePasswordforUser(String email, CharSequence newRawPassword) {
 		String encodedPassword =  passwordEncoder.encode(newRawPassword);
 		int updateStatus = userRepo.updatePassword(email, encodedPassword);
 		return updateStatus;
 	}
 
 	@Override
-	public int validateEmailAddress(String email) {
+	public Integer validateEmailAddress(String email) {
 	    int value = userRepo.validateEmail(email);
 		return value;
+	}
+
+	@Transactional
+	@Override
+	public Integer updateUserTwoFactorAuthStatus(String email, boolean isOn) {
+		return userRepo.updateTwofactorAuthenticationStatus(email, isOn);
 	}
 
 }
