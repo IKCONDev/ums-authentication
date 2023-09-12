@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ikn.ums</groupId>
-	<artifactId>ums-authentication</artifactId>
+	<artifactId>ums-users</artifactId>
 	<version>0.0.1</version>
-	<name>ums-authentication</name>
-	<description>ums-authentication</description>
+	<name>ums-users</name>
+	<description>ums-users</description>
 	<packaging>jar</packaging>
 	<properties>
 		<java.version>11</java.version>
