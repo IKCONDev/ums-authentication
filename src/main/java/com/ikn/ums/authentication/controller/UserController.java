@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ikn.ums.authentication.VO.EmployeeVO;
-import com.ikn.ums.authentication.dto.UserDetailsDto;
+import com.ikn.ums.authentication.VO.UserVO;
+import com.ikn.ums.authentication.entity.UserDetailsEntity;
 import com.ikn.ums.authentication.model.UpdatePasswordRequestModel;
 import com.ikn.ums.authentication.model.ValidateOtpRequestModel;
 import com.ikn.ums.authentication.service.IUsersService;
 
 @RestController
 @RequestMapping("/users")
-public class LoginController {
+public class UserController {
 	
 	@Autowired
 	private BCryptPasswordEncoder encoder;
@@ -94,7 +95,7 @@ public class LoginController {
 	@GetMapping("/user-profile/{username}")
 	public ResponseEntity<?> fetchUserProfile(@PathVariable String username){
 		try {
-			EmployeeVO userprofileDetails = userService.getUserDetailsByUsername(username);
+			UserVO userprofileDetails = userService.getUserProfile(username);
 			System.out.println(userprofileDetails);
 			return new ResponseEntity<>(userprofileDetails, HttpStatus.OK);
 		}catch (Exception e) {

@@ -5,8 +5,6 @@ import java.util.Random;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
@@ -17,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.ikn.ums.authentication.VO.EmployeeVO;
-import com.ikn.ums.authentication.dto.UserDetailsDto;
+import com.ikn.ums.authentication.VO.UserVO;
 import com.ikn.ums.authentication.entity.UserDetailsEntity;
 import com.ikn.ums.authentication.repository.UserRepository;
 import com.ikn.ums.authentication.service.IUsersService;
@@ -39,35 +37,41 @@ public class UsersServiceImpl implements IUsersService {
 	private RestTemplate restTemplate;
 
 	@Override
-	public EmployeeVO getUserDetailsByUsername(String email) {
+	public UserDetailsEntity getUserDetailsByUsername(String email) {
+		// old implementation UserDetailsEntity loadedUser =
+		UserDetailsEntity loadedUser = userRepo.findByEmail(email);
+		if (loadedUser == null)
+			throw new UsernameNotFoundException("User with " + email + " does not exist");
+		
+		System.out.println("UsersServiceImpl.getUserDetailsByUsername() "+email+" "+loadedUser);
+		return loadedUser;
+		// ModelMapper mapper = new ModelMapper();
+		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		// return mapper.map(loadedUser, UserDetailsDto.class);
 
-		/*
-		 * // old implementation UserDetailsEntity loadedUser =
-		 * userRepo.findByEmail(email); if (loadedUser == null) throw new
-		 * UsernameNotFoundException("User with " + email + " does not exist");
-		 * ModelMapper mapper = new ModelMapper();
-		 * mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		 * return mapper.map(loadedUser, UserDetailsDto.class);
-		 */
 		// communicate with Employee microservice and get the employee object
 
-		ResponseEntity<EmployeeVO> response = restTemplate
-				.getForEntity("http://UMS-EMPLOYEE-SERVICE/employees/" + email, EmployeeVO.class);
-		EmployeeVO employeeDetails = response.getBody();
-		if (employeeDetails == null)
-			throw new UsernameNotFoundException("User with " + email + " does not exist");
-		return employeeDetails;
+		/*
+		 * ResponseEntity<EmployeeVO> response = restTemplate
+		 * .getForEntity("http://UMS-EMPLOYEE-SERVICE/employees/" + email,
+		 * EmployeeVO.class); EmployeeVO employeeDetails = response.getBody(); if
+		 * (employeeDetails == null) throw new UsernameNotFoundException("User with " +
+		 * email + " does not exist"); return employeeDetails;
+		 */
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		ResponseEntity<EmployeeVO> response = restTemplate
-				.getForEntity("http://UMS-EMPLOYEE-SERVICE/employees/" + username, EmployeeVO.class);
-		EmployeeVO employeeDetails = response.getBody();
-		System.out.println(employeeDetails);
-		if (employeeDetails == null)
+		/*
+		 * ResponseEntity<EmployeeVO> response = restTemplate
+		 * .getForEntity("http://UMS-EMPLOYEE-SERVICE/employees/" + username,
+		 * EmployeeVO.class); EmployeeVO employeeDetails = response.getBody();
+		 */
+		UserDetailsEntity userDetails = userRepo.findByEmail(username);
+		if (userDetails == null)
 			throw new UsernameNotFoundException("User does not exists");
-		return new User(employeeDetails.getEmail(), employeeDetails.getEncryptedPassword(), true, true, true, true,
+		System.out.println("UsersServiceImpl.loadUserByUsername() "+userDetails);
+		return new User(userDetails.getEmail(), userDetails.getEncryptedPassword(), true, true, true, true,
 				new ArrayList<>());
 	}
 
@@ -121,6 +125,26 @@ public class UsersServiceImpl implements IUsersService {
 	@Override
 	public Integer updateUserTwoFactorAuthStatus(String email, boolean isOn) {
 		return userRepo.updateTwofactorAuthenticationStatus(email, isOn);
+	}
+
+	@Override
+	public UserVO getUserProfile(String username) {
+		//get user details
+		UserDetailsEntity dbLoggedInUser = getUserDetailsByUsername(username);
+		// communicate with Employee microservice and get the employee object
+        System.out.println("UsersServiceImpl.getUserProfile() "+username);
+		ResponseEntity<EmployeeVO> response = restTemplate
+				.getForEntity("http://UMS-EMPLOYEE-SERVICE/employees/" + username, EmployeeVO.class);
+		EmployeeVO employeeDetails = response.getBody();
+		if (employeeDetails == null)
+			throw new UsernameNotFoundException("User with " + username + " does not exist");
+		UserVO user = new UserVO();
+		user.setEmail(dbLoggedInUser.getEmail());
+		user.setEncryptedPassword(dbLoggedInUser.getEncryptedPassword());
+		user.setTwoFactorAuthentication(dbLoggedInUser.isTwoFactorAuthentication());
+		user.setUserRole(dbLoggedInUser.getUserRole());
+		user.setEmployee(employeeDetails);
+		return user;
 	}
 
 }

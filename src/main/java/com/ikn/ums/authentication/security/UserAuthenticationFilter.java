@@ -20,8 +20,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ikn.ums.authentication.VO.EmployeeVO;
-import com.ikn.ums.authentication.dto.UserDetailsDto;
+import com.ikn.ums.authentication.VO.UserVO;
 import com.ikn.ums.authentication.model.UserLoginRequestModel;
 import com.ikn.ums.authentication.service.IUsersService;
 
@@ -61,17 +60,18 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		String userName = ((User) authResult.getPrincipal()).getUsername();
-		
+		System.out.println("UserAuthenticationFilter.successfulAuthentication()" +userName);
 		//get employee and their department details
-		EmployeeVO loadedUser = service.getUserDetailsByUsername(userName);
+		UserVO loadedUser = service.getUserProfile(userName);
+		System.out.println("UserAuthenticationFilter.successfulAuthentication() "+loadedUser);
 
-		String webToken = Jwts.builder().setSubject(loadedUser.getId().toString())
+		String webToken = Jwts.builder().setSubject(loadedUser.getEmail())
 				.setExpiration(new Date(
 						System.currentTimeMillis() + Long.parseLong(environment.getProperty("token.expiration_time"))))
 				.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
 				.setIssuer(request.getRequestURL().toString()).claim("role", loadedUser.getUserRole()).compact();
 
-		String refreshToken = Jwts.builder().setSubject(loadedUser.getId().toString())
+		String refreshToken = Jwts.builder().setSubject(loadedUser.getEmail())
 				.setExpiration(new Date(
 						System.currentTimeMillis() + Long.parseLong(environment.getProperty("token.expiration_time"))))
 				.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
@@ -79,13 +79,13 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 		response.addHeader("token", webToken);
 		response.addHeader("refreshToken", refreshToken);
 		System.out.println(webToken);
-		response.addHeader("userId", loadedUser.getId().toString());
+		//response.addHeader("userId", loadedUser.getId().toString());
 		response.addHeader("userRole", loadedUser.getUserRole());
-		response.addHeader("firstName", loadedUser.getFirstName());
-		response.addHeader("lastName", loadedUser.getLastName());
+		response.addHeader("firstName", loadedUser.getEmployee().getFirstName());
+		response.addHeader("lastName", loadedUser.getEmployee().getLastName());
 		response.addHeader("email", loadedUser.getEmail());
 		response.addHeader("twoFactorAuth", Boolean.toString(loadedUser.isTwoFactorAuthentication()));
-		response.addHeader("department", loadedUser.getDepartment().getDepartmentName());
+		//response.addHeader("department", loadedUser.getDepartment());
 		//response.addHeader("Access-Control-Allow-Origin", "*");
 		Map<String, String> tokenData = new HashMap<String, String>();
 		tokenData.put("token", webToken);

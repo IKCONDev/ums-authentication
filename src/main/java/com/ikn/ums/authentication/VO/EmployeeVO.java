@@ -15,12 +15,12 @@ public class EmployeeVO {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private String encryptedPassword;
-	private String userRole;
+//	private String encryptedPassword;
+//	private String userRole;
 	//private String department;
 	private String designation;
-	private int otpCode;
-	private boolean twoFactorAuthentication;
+//	private int otpCode;
+//	private boolean twoFactorAuthentication;
 	private Long departmentId;
 	private DepartmentVO department;
 }
